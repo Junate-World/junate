@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Task Details</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    .theme-toggle {
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      z-index: 10;
+    }
+    .task-message {
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 0.375rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .task-message h6 {
+      color: #856404;
+      margin-bottom: 0.5rem;
+    }
+    .task-message p {
+      color: #856404;
+      margin-bottom: 0;
+    }
+    .status-indicator[data-status="Active"] {
+      background: #22c55e;
+      box-shadow: 0 0 0 2px #22c55e33;
+    }
+    .status-indicator[data-status="On hold"] {
+      background: #facc15;
+      box-shadow: 0 0 0 2px #facc1533;
+    }
+    .status-indicator[data-status="Closed"] {
+      background: #ef4444;
+      box-shadow: 0 0 0 2px #ef444433;
+    }
+  </style>
+</head>
+<body class="p-4 bg-light" id="mainBody">
+  <div class="theme-toggle">
+    <button id="themeToggler" class="btn btn-outline-secondary" title="Toggle light/dark mode">
+      <span id="themeIcon" class="bi bi-moon"></span>
+    </button>
+  </div>
+  <div class="container">
+    <a href="/dashboard" class="btn btn-secondary mb-4">&larr; Back to Dashboard</a>
+    
+    <!-- Task Type Message -->
+    {% if task.task == "Decommission" %}
+    <div class="task-message">
+      <h6><i class="bi bi-exclamation-triangle"></i> Task Requirements</h6>
+      <p>HSE+Customer_Exp+RTO Approval required for this task and ensure to renew your SWP if expired</p>
+    </div>
+    {% elif task.task == "Decommision and Retrieval" %}
+    <div class="task-message">
+      <h6><i class="bi bi-exclamation-triangle"></i> Task Requirements</h6>
+      <p>HSE+Customer_Exp+RTO Approval required for this task and ensure to renew your SWP if expired</p>
+    </div>
+    {% elif task.task == "Infra Works" %}
+    <div class="task-message">
+      <h6><i class="bi bi-exclamation-triangle"></i> Task Requirements</h6>
+      <p>HSE+Customer_Exp+RTO Approval required for this task and ensure to renew your SWP if expired</p>
+    </div>
+    {% elif task.task == "Relocation" %}
+    <div class="task-message">
+      <h6><i class="bi bi-exclamation-triangle"></i> Task Requirements</h6>
+      <p>HSE+Customer_Exp+RTO+Director Approval required for this task and ensure to renew your SWP if expired</p>
+    </div>
+    {% endif %}
+    
+    <div class="card position-relative">
+      <!-- Status Indicator -->
+      <span class="status-indicator position-absolute top-0 end-0 m-2"
+            data-status="{{ task.status }}"
+            style="width: 18px; height: 18px; display: inline-block; border-radius: 50%; border: 2px solid #fff;"></span>
+      <div class="card-body">
+        <div class="created-at-top">Created: {{ task.created_at.strftime('%Y-%m-%d %H:%M:%S') if task.created_at else '' }}</div>
+        <h3 class="card-title">
+          <span class="badge bg-primary">{{ task.task }}</span>
+          <span class="badge ms-2"
+                style="background: {% if task.status == 'Active' %}#22c55e{% elif task.status == 'On hold' %}#facc15{% else %}#ef4444{% endif %}; color: #fff;">
+            {{ task.status }}
+          </span>
+        </h3>
+        <h5 class="text-primary">Site Name: {{ task.site_name }}</h5>
+        <div class="text-muted">Created: {{ task.created_at.strftime('%Y-%m-%d %H:%M:%S') if task.created_at else '' }}</div>
+        <p class="card-text"><strong>Owner:</strong> {{ task.owner }}</p>
+        <p class="card-text"><strong>Contact Email:</strong> {{ task.contact }}</p>
+        <p class="card-text"><strong>Phone:</strong> {{ task.phone }}</p>
+        <hr>
+        <h5>Summary/Comment</h5>
+        <p class="card-text">{{ task.summary }}</p>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Theme toggler logic
+    function setTheme(dark) {
+      const body = document.getElementById('mainBody');
+      if (dark) {
+        body.classList.remove('bg-light');
+        body.classList.add('bg-dark', 'text-light');
+        document.querySelectorAll('.card').forEach(card => {
+          card.classList.add('bg-dark', 'text-light', 'border-secondary');
+        });
+        document.getElementById('themeIcon').className = 'bi bi-sun';
+      } else {
+        body.classList.remove('bg-dark', 'text-light');
+        body.classList.add('bg-light');
+        document.querySelectorAll('.card').forEach(card => {
+          card.classList.remove('bg-dark', 'text-light', 'border-secondary');
+        });
+        document.getElementById('themeIcon').className = 'bi bi-moon';
+      }
+    }
+    function getThemePref() {
+      return localStorage.getItem('theme') === 'dark';
+    }
+    function saveThemePref(dark) {
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      let dark = getThemePref();
+      setTheme(dark);
+      document.getElementById('themeToggler').onclick = function() {
+        dark = !dark;
+        setTheme(dark);
+        saveThemePref(dark);
+      };
+    });
+  </script>
+</body>
+</html> 

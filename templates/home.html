@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Junate World Project Management Tool</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #e0e7ff 0%, #fff 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .hero {
+      flex: 1 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4rem 1rem;
+    }
+    .hero-content {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+      padding: 3rem 2rem;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #6366f1;
+      margin-bottom: 1rem;
+    }
+    .hero-desc {
+      font-size: 1.2rem;
+      color: #374151;
+      margin-bottom: 2rem;
+    }
+    .btn-group-lg > .btn {
+      font-size: 1.2rem;
+      padding: 0.8rem 2rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container-fluid">
+      <span class="navbar-brand fw-bold fs-4">
+        Junate World Project Management Tool
+      </span>
+      <div class="ms-auto d-flex align-items-center">
+        <span class="badge bg-primary ms-2">{{ user_count }}</span>
+      </div>
+    </div>
+  </nav>
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-title">Welcome to Junate World Project Management</div>
+      <div class="hero-desc">Organize your projects, track your tasks, and boost your productivity. Sign up now to get started or log in if you already have an account.</div>
+      <div class="btn-group btn-group-lg" role="group">
+        <a href="/" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#signupModal"><i class="bi bi-person-plus"></i> Sign Up</a>
+        <a href="/" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+      </div>
+    </div>
+  </div>
+  <footer class="text-center py-4 text-muted">
+    &copy; {{ year }} Junate World Project Management. All rights reserved.
+  </footer>
+
+  <!-- Authentication Modals -->
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm">
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="loginEmail" required>
+            </div>
+            <div class="mb-3">
+              <label for="loginPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="loginPassword" required>
+            </div>
+            <div class="mb-2 text-end">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#forgotModal" data-bs-dismiss="modal">Forgot password?</a>
+            </div>
+            <div id="loginMsg" class="mb-2 text-danger"></div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Sign Up Modal -->
+  <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="signupForm">
+            <div class="mb-3">
+              <label for="signupFullName" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="signupFullName" required>
+            </div>
+            <div class="mb-3">
+              <label for="signupEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="signupEmail" required>
+            </div>
+            <div class="mb-3">
+              <label for="signupPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="signupPassword" required>
+            </div>
+            <div class="mb-3">
+              <label for="signupConfirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="signupConfirmPassword" required>
+            </div>
+            <div id="signupMsg" class="mb-2 text-danger"></div>
+            <button type="submit" class="btn btn-success w-100">Sign Up</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotModal" tabindex="-1" aria-labelledby="forgotModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotModalLabel">Forgot Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="forgotForm">
+            <div class="mb-3">
+              <label for="forgotEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="forgotEmail" required>
+            </div>
+            <div id="forgotMsg" class="mb-2 text-danger"></div>
+            <button type="submit" class="btn btn-warning w-100">Send Reset Link</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Authentication Modals -->
+
+  <!-- Authentication JS -->
+  <script>
+  // Login AJAX
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const msg = document.getElementById('loginMsg');
+      msg.textContent = '';
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        msg.classList.remove('text-danger');
+        msg.classList.add('text-success');
+        msg.textContent = 'Login successful! Redirecting...';
+        setTimeout(() => { window.location.href = '/user'; }, 1000);
+      } else {
+        msg.classList.remove('text-success');
+        msg.classList.add('text-danger');
+        msg.textContent = data.message || 'Login failed.';
+      }
+    });
+  }
+  // Sign Up AJAX
+  const signupForm = document.getElementById('signupForm');
+  if (signupForm) {
+    signupForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const full_name = document.getElementById('signupFullName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('signupConfirmPassword').value;
+      const msg = document.getElementById('signupMsg');
+      msg.textContent = '';
+      if (password !== confirmPassword) {
+        msg.classList.remove('text-success');
+        msg.classList.add('text-danger');
+        msg.textContent = 'Passwords do not match.';
+        return;
+      }
+      const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full_name, email, password })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        msg.classList.remove('text-danger');
+        msg.classList.add('text-success');
+        msg.textContent = 'Sign up successful! Please log in with your new credentials.';
+        signupForm.reset();
+        setTimeout(() => {
+          const signupModal = bootstrap.Modal.getInstance(document.getElementById('signupModal'));
+          if (signupModal) signupModal.hide();
+          const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+          loginModal.show();
+        }, 1500);
+      } else {
+        msg.classList.remove('text-success');
+        msg.classList.add('text-danger');
+        msg.textContent = data.message || 'Sign up failed.';
+      }
+    });
+  }
+  // Forgot Password AJAX
+  const forgotForm = document.getElementById('forgotForm');
+  if (forgotForm) {
+    forgotForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value;
+      const msg = document.getElementById('forgotMsg');
+      msg.textContent = '';
+      const res = await fetch('/forgot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        msg.classList.remove('text-danger');
+        msg.classList.add('text-success');
+        msg.textContent = data.message || 'Check your email for reset instructions.';
+      } else {
+        msg.classList.remove('text-success');
+        msg.classList.add('text-danger');
+        msg.textContent = data.message || 'No account found.';
+      }
+    });
+  }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

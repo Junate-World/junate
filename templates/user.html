@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Junate World Project Management - Home</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #e0e7ff 0%, #fff 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .main-content {
+      flex: 1 0 auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 0;
+      margin-top: 2.5rem;
+    }
+    .task-card-home {
+      max-width: 400px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+      padding: 2.5rem 2rem 2rem 2rem;
+      text-align: center;
+      margin-top: 0;
+      transition: background 0.3s, color 0.3s;
+    }
+    .task-card-home.dark-mode {
+      background: #23272b;
+      color: #f8fafc;
+      border: 1px solid #444;
+    }
+    .big-number {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: #6366f1;
+      margin-bottom: 0.5rem;
+      transition: color 0.3s;
+    }
+    .big-number.dark-mode {
+      color: #a5b4fc;
+    }
+    .text-muted.dark-mode {
+      color: #b0b3b8 !important;
+    }
+    .quote-carousel-container {
+      width: 100%;
+      background: #f8fafc;
+      border-top: 1px solid #e5e7eb;
+      padding: 2rem 0 1.5rem 0;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+    .carousel-item {
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quote-text {
+      font-size: 1.15rem;
+      font-style: italic;
+      color: #374151;
+    }
+    .quote-author {
+      font-size: 1rem;
+      color: #6366f1;
+      margin-top: 0.5rem;
+    }
+    .theme-toggle {
+      margin-left: 1rem;
+    }
+    @media (max-width: 600px) {
+      .task-card-home { padding: 1.5rem 0.5rem; margin-bottom: 1.5rem; }
+      .quote-carousel-container { padding: 1rem 0 0.5rem 0; }
+      .main-content .row { flex-direction: column !important; }
+      .main-content .col-12 { max-width: 100%; flex: 0 0 100%; }
+      .big-number { font-size: 2.2rem; }
+      .fw-semibold, .text-muted { font-size: 1rem; }
+      .dashboard-btn, .btn { font-size: 1rem; padding: 0.6rem 1.2rem; }
+      .navbar-brand { font-size: 1.1rem !important; }
+    }
+    .quote-box {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      padding: 1.5rem 2rem;
+      max-width: 500px;
+      min-width: 250px;
+      margin: 0 auto;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(.4,2.3,.3,1);
+      position: relative;
+    }
+    .carousel-fade .carousel-item {
+      opacity: 0;
+      transition-property: opacity, transform;
+      transform: translateX(100%);
+    }
+    .carousel-fade .carousel-item.active,
+    .carousel-fade .carousel-item-next.carousel-item-start,
+    .carousel-fade .carousel-item-prev.carousel-item-end {
+      opacity: 1;
+      transform: translateX(0);
+      z-index: 2;
+    }
+    .carousel-fade .carousel-item-next,
+    .carousel-fade .carousel-item-prev,
+    .carousel-fade .carousel-item.active.carousel-item-end,
+    .carousel-fade .carousel-item.active.carousel-item-start {
+      opacity: 0;
+      transform: translateX(-100%);
+      z-index: 1;
+    }
+  </style>
+</head>
+<body class="bg-light" id="mainBody">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container-fluid">
+      <span class="navbar-brand fw-bold fs-4">Welcome {{ current_user.full_name }}</span>
+      <div class="ms-auto d-flex align-items-center">
+        <div class="theme-toggle">
+          <button id="themeToggler" class="btn btn-outline-secondary" title="Toggle light/dark mode">
+            <span id="themeIcon" class="bi bi-moon"></span>
+          </button>
+        </div>
+        <a href="/dashboard" class="btn btn-outline-primary ms-3">Dashboard</a>
+        <form id="logoutForm" method="post" action="/logout" class="d-inline ms-2">
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container">
+      <div class="row justify-content-center g-4">
+        <div class="col-12 col-md-3">
+          <div class="task-card-home">
+            <div class="mb-3">
+              <div class="big-number">{{ total_tasks }}</div>
+              <div class="text-muted">Total Tasks</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="task-card-home" style="background:#e0f7ef;">
+            <div class="mb-3">
+              <div class="big-number" style="color:#22c55e;">{{ active_count }}</div>
+              <div class="fw-semibold" style="color:#22c55e;">Active Tasks</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="task-card-home" style="background:#fffbe6;">
+            <div class="mb-3">
+              <div class="big-number" style="color:#facc15;">{{ onhold_count }}</div>
+              <div class="fw-semibold" style="color:#facc15;">On hold Tasks</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="task-card-home" style="background:#ffeaea;">
+            <div class="mb-3">
+              <div class="big-number" style="color:#ef4444;">{{ closed_count }}</div>
+              <div class="fw-semibold" style="color:#ef4444;">Closed Tasks</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Motivational Quotes Carousel at Bottom -->
+  <div class="quote-carousel-container">
+    <div id="quoteCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4000">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“Success is not the key to happiness. Happiness is the key to success.”</div>
+            <div class="quote-author">– Albert Schweitzer</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“The only way to do great work is to love what you do.”</div>
+            <div class="quote-author">– Steve Jobs</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“Don't watch the clock; do what it does. Keep going.”</div>
+            <div class="quote-author">– Sam Levenson</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“Opportunities don't happen. You create them.”</div>
+            <div class="quote-author">– Chris Grosser</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“Believe you can and you're halfway there.”</div>
+            <div class="quote-author">– Theodore Roosevelt</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“It always seems impossible until it's done.”</div>
+            <div class="quote-author">– Nelson Mandela</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“Start where you are. Use what you have. Do what you can.”</div>
+            <div class="quote-author">– Arthur Ashe</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“Quality means doing it right when no one is looking.”</div>
+            <div class="quote-author">– Henry Ford</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“The future depends on what you do today.”</div>
+            <div class="quote-author">– Mahatma Gandhi</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="quote-box mx-auto">
+            <div class="quote-text">“Don't be afraid to give up the good to go for the great.”</div>
+            <div class="quote-author">– John D. Rockefeller</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Authentication JS -->
+  <script>
+  // Login AJAX
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const msg = document.getElementById('loginMsg');
+      msg.textContent = '';
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        window.location.href = '/dashboard';
+      } else {
+        msg.textContent = data.message || 'Login failed.';
+      }
+    });
+  }
+  // Sign Up AJAX
+  const signupForm = document.getElementById('signupForm');
+  if (signupForm) {
+    signupForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const msg = document.getElementById('signupMsg');
+      msg.textContent = '';
+      const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        window.location.href = '/dashboard';
+      } else {
+        msg.textContent = data.message || 'Sign up failed.';
+      }
+    });
+  }
+  // Forgot Password AJAX
+  const forgotForm = document.getElementById('forgotForm');
+  if (forgotForm) {
+    forgotForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value;
+      const msg = document.getElementById('forgotMsg');
+      msg.textContent = '';
+      const res = await fetch('/forgot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.status === 'success') {
+        msg.classList.remove('text-danger');
+        msg.classList.add('text-success');
+        msg.textContent = data.message || 'Check your email for reset instructions.';
+      } else {
+        msg.classList.remove('text-success');
+        msg.classList.add('text-danger');
+        msg.textContent = data.message || 'No account found.';
+      }
+    });
+  }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Theme toggler logic
+    function setTheme(dark) {
+      const body = document.getElementById('mainBody');
+      if (dark) {
+        body.classList.remove('bg-light');
+        body.classList.add('bg-dark', 'text-light');
+        document.querySelectorAll('.task-card-home').forEach(card => {
+          card.classList.add('bg-dark', 'text-light', 'border-secondary', 'dark-mode');
+        });
+        document.querySelectorAll('.big-number').forEach(el => {
+          el.classList.add('dark-mode');
+        });
+        document.querySelectorAll('.text-muted').forEach(el => {
+          el.classList.add('dark-mode');
+        });
+        document.querySelectorAll('.navbar').forEach(nav => {
+          nav.classList.add('bg-dark', 'navbar-dark');
+          nav.classList.remove('bg-white', 'navbar-light');
+        });
+        document.getElementById('themeIcon').className = 'bi bi-sun';
+      } else {
+        body.classList.remove('bg-dark', 'text-light');
+        body.classList.add('bg-light');
+        document.querySelectorAll('.task-card-home').forEach(card => {
+          card.classList.remove('bg-dark', 'text-light', 'border-secondary', 'dark-mode');
+        });
+        document.querySelectorAll('.big-number').forEach(el => {
+          el.classList.remove('dark-mode');
+        });
+        document.querySelectorAll('.text-muted').forEach(el => {
+          el.classList.remove('dark-mode');
+        });
+        document.querySelectorAll('.navbar').forEach(nav => {
+          nav.classList.remove('bg-dark', 'navbar-dark');
+          nav.classList.add('bg-white', 'navbar-light');
+        });
+        document.getElementById('themeIcon').className = 'bi bi-moon';
+      }
+    }
+    function getThemePref() {
+      return localStorage.getItem('theme') === 'dark';
+    }
+    function saveThemePref(dark) {
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      let dark = getThemePref();
+      setTheme(dark);
+      document.getElementById('themeToggler').onclick = function() {
+        dark = !dark;
+        setTheme(dark);
+        saveThemePref(dark);
+      };
+    });
+  </script>
+</body>
+</html> 
