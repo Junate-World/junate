@@ -10,7 +10,7 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_DATABASE_URL', 'sqlite:///tasks.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///tasks.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')  # REQUIRED for session management and Flask-Login
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
@@ -58,6 +58,8 @@ class Task(db.Model):
 def init_db():
     with app.app_context():
         db.create_all()
+
+init_db()  # Ensure tables are created on every startup
 
 @app.route('/')
 def home():
@@ -267,5 +269,4 @@ def user_page():
     return render_template('user.html', total_tasks=total_tasks, active_count=active_count, onhold_count=onhold_count, closed_count=closed_count)
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
