@@ -10,9 +10,9 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SUPABASE_DATABASE_URL', 'sqlite:///tasks.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = os.environ.get('SECRET_KEY')  # REQUIRED for session management and Flask-Login
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key')  # REQUIRED for session management and Flask-Login
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
 # Flask-Mail and SendGrid configuration
@@ -56,9 +56,8 @@ class Task(db.Model):
     user = db.relationship('User', backref=db.backref('tasks', lazy=True))
 
 def init_db():
-    if not os.path.exists('tasks.db'):
-        with app.app_context():
-            db.create_all()
+    with app.app_context():
+        db.create_all()
 
 @app.route('/')
 def home():
