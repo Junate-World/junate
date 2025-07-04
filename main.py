@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import or_
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -12,7 +12,8 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'aa11-bb22-ee55-ll12-jj10-ii99'  # REQUIRED for session management and Flask-Login
+app.secret_key = os.environ.get('SECRET_KEY')  # REQUIRED for session management and Flask-Login
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
 # Flask-Mail and SendGrid configuration
 app.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
@@ -206,6 +207,7 @@ def login():
     user = User.query.filter_by(email=email).first()
     if user and user.check_password(password):
         login_user(user)
+        session.permanent = True  # Enable session timeout
         return jsonify({'status': 'success'})
     return jsonify({'status': 'error', 'message': 'Invalid email or password'}), 401
 
