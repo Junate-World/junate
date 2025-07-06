@@ -187,43 +187,58 @@
   // Sign Up AJAX
   const signupForm = document.getElementById('signupForm');
   if (signupForm) {
+    console.log('Sign-up form found and event listener attached');
     signupForm.addEventListener('submit', async function(e) {
       e.preventDefault();
+      console.log('Sign-up form submitted');
       const full_name = document.getElementById('signupFullName').value;
       const email = document.getElementById('signupEmail').value;
       const password = document.getElementById('signupPassword').value;
       const confirmPassword = document.getElementById('signupConfirmPassword').value;
       const msg = document.getElementById('signupMsg');
       msg.textContent = '';
+      console.log('Form data:', { full_name, email, password: '***', confirmPassword: '***' });
       if (password !== confirmPassword) {
         msg.classList.remove('text-success');
         msg.classList.add('text-danger');
         msg.textContent = 'Passwords do not match.';
         return;
       }
-      const res = await fetch('/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ full_name, email, password })
-      });
-      const data = await res.json();
-      if (data.status === 'success') {
-        msg.classList.remove('text-danger');
-        msg.classList.add('text-success');
-        msg.textContent = 'Sign up successful! Please log in with your new credentials.';
-        signupForm.reset();
-        setTimeout(() => {
-          const signupModal = bootstrap.Modal.getInstance(document.getElementById('signupModal'));
-          if (signupModal) signupModal.hide();
-          const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-          loginModal.show();
-        }, 1500);
-      } else {
+      try {
+        console.log('Sending fetch request to /register');
+        const res = await fetch('/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ full_name, email, password })
+        });
+        console.log('Response received:', res.status, res.statusText);
+        const data = await res.json();
+        console.log('Response data:', data);
+        if (data.status === 'success') {
+          msg.classList.remove('text-danger');
+          msg.classList.add('text-success');
+          msg.textContent = 'Sign up successful! Please log in with your new credentials.';
+          signupForm.reset();
+          setTimeout(() => {
+            const signupModal = bootstrap.Modal.getInstance(document.getElementById('signupModal'));
+            if (signupModal) signupModal.hide();
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+          }, 1500);
+        } else {
+          msg.classList.remove('text-success');
+          msg.classList.add('text-danger');
+          msg.textContent = data.message || 'Sign up failed.';
+        }
+      } catch (error) {
+        console.error('Error during sign-up:', error);
         msg.classList.remove('text-success');
         msg.classList.add('text-danger');
-        msg.textContent = data.message || 'Sign up failed.';
+        msg.textContent = 'Network error. Please try again.';
       }
     });
+  } else {
+    console.error('Sign-up form not found!');
   }
   // Forgot Password AJAX
   const forgotForm = document.getElementById('forgotForm');
