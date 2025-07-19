@@ -56,8 +56,8 @@ class Task(db.Model):
     user = db.relationship('User', backref=db.backref('tasks', lazy=True))
 
 def init_db():
-    with app.app_context():
-        db.create_all()
+        with app.app_context():
+            db.create_all()
 
 init_db()  # Ensure tables are created on every startup
 
@@ -267,6 +267,27 @@ def user_page():
     onhold_count = Task.query.filter_by(user_id=current_user.id, status='On hold').count()
     closed_count = Task.query.filter_by(user_id=current_user.id, status='Closed').count()
     return render_template('user.html', total_tasks=total_tasks, active_count=active_count, onhold_count=onhold_count, closed_count=closed_count)
+
+@app.route('/chatbot', methods=['POST'])
+@login_required
+def chatbot():
+    data = request.json
+    user_message = data.get('message', '').lower()
+    # Simple rule-based logic for demo
+    if 'create task' in user_message or 'add task' in user_message:
+        # Extract task details from the message (for demo, use a placeholder)
+        new_task = Task(
+            task='Task created via chatbot',
+            owner=current_user.full_name,
+            contact=current_user.email,
+            summary='Created from chatbot',
+            user_id=current_user.id
+        )
+        db.session.add(new_task)
+        db.session.commit()
+        return jsonify({'reply': f"Task '{new_task.task}' created!"})
+    # Default reply
+    return jsonify({'reply': "I'm your assistant! Ask me to create a task or help with your dashboard."})
 
 if __name__ == '__main__':
     app.run(debug=True)
