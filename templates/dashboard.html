@@ -182,6 +182,8 @@ const chatbotForm = document.getElementById('chatbot-form');
 const chatbotInput = document.getElementById('chatbot-input');
 const chatbotMessages = document.getElementById('chatbot-messages');
 
+let chatbotState = null; // null or { step: 'task', data: { ... } }
+
 chatbotToggle.onclick = () => {
   chatbotWindow.style.display = chatbotWindow.style.display === 'none' ? 'flex' : 'none';
 };
@@ -192,15 +194,23 @@ chatbotForm.onsubmit = async (e) => {
   if (!userMsg) return;
   chatbotMessages.innerHTML += `<div><b>You:</b> ${userMsg}</div>`;
   chatbotInput.value = '';
-  // Send to backend
+  // Send to backend with state
   const res = await fetch('/chatbot', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: userMsg })
+    body: JSON.stringify({ message: userMsg, chatbot_state: chatbotState })
   });
   const data = await res.json();
+  chatbotState = data.next_state || null;
   chatbotMessages.innerHTML += `<div><b>Bot:</b> ${data.reply}</div>`;
   chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+  // If task created, clear chat after 3 seconds
+  if (data.reply && data.reply.toLowerCase().includes('task') && data.reply.toLowerCase().includes('created')) {
+    setTimeout(() => {
+      chatbotMessages.innerHTML = '';
+      chatbotState = null;
+    }, 3000);
+  }
 };
 </script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">

@@ -272,22 +272,46 @@ def user_page():
 @login_required
 def chatbot():
     data = request.json
-    user_message = data.get('message', '').lower()
-    # Simple rule-based logic for demo
-    if 'create task' in user_message or 'add task' in user_message:
-        # Extract task details from the message (for demo, use a placeholder)
+    user_message = data.get('message', '').strip()
+    state = data.get('chatbot_state') or {}
+    # Multi-step task creation
+    if state.get('step') == 'awaiting_task':
+        state['data']['task'] = user_message
+        reply = 'Who is the owner of this task?'
+        state['step'] = 'awaiting_owner'
+        return jsonify({'reply': reply, 'next_state': state})
+    elif state.get('step') == 'awaiting_owner':
+        state['data']['owner'] = user_message
+        reply = 'Who is the contact for this task?'
+        state['step'] = 'awaiting_contact'
+        return jsonify({'reply': reply, 'next_state': state})
+    elif state.get('step') == 'awaiting_contact':
+        state['data']['contact'] = user_message
+        reply = 'Please provide a summary for this task (or type "skip"):'
+        state['step'] = 'awaiting_summary'
+        return jsonify({'reply': reply, 'next_state': state})
+    elif state.get('step') == 'awaiting_summary':
+        summary = user_message if user_message.lower() != 'skip' else ''
+        state['data']['summary'] = summary
+        # All info collected, create the task
         new_task = Task(
-            task='Task created via chatbot',
-            owner=current_user.full_name,
-            contact=current_user.email,
-            summary='Created from chatbot',
+            task=state['data']['task'],
+            owner=state['data']['owner'],
+            contact=state['data']['contact'],
+            summary=state['data']['summary'],
             user_id=current_user.id
         )
         db.session.add(new_task)
         db.session.commit()
-        return jsonify({'reply': f"Task '{new_task.task}' created!"})
+        reply = f"Task '{new_task.task}' created!"
+        return jsonify({'reply': reply, 'next_state': None})
+    # Start task creation if prompted
+    if 'create task' in user_message.lower() or 'add task' in user_message.lower():
+        reply = 'What is the name of the task?'
+        state = {'step': 'awaiting_task', 'data': {}}
+        return jsonify({'reply': reply, 'next_state': state})
     # Default reply
-    return jsonify({'reply': "I'm your assistant! Ask me to create a task or help with your dashboard."})
+    return jsonify({'reply': "I'm your assistant! Ask me to create a task or help with your dashboard.", 'next_state': None})
 
 if __name__ == '__main__':
     app.run(debug=True)
