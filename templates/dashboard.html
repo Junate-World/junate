@@ -57,6 +57,25 @@
       #addTaskForm .col-md-2, #addTaskForm .col-md-1 { flex: 0 0 100%; max-width: 100%; }
       #addTaskForm { flex-wrap: wrap !important; }
     }
+    body.dark-mode #chatbot-window {
+      background: #23272f !important;
+      color: #f1f1f1 !important;
+      border: 1px solid #444 !important;
+    }
+    body.dark-mode #chatbot-messages {
+      background: #23272f !important;
+      color: #f1f1f1 !important;
+    }
+    body.dark-mode #chatbot-input {
+      background: #23272f !important;
+      color: #f1f1f1 !important;
+      border-color: #444 !important;
+    }
+    body.dark-mode #chatbot-window .btn {
+      background: #6366f1 !important;
+      color: #fff !important;
+      border: none !important;
+    }
   </style>
 </head>
 <body class="p-4 bg-light" id="mainBody">
@@ -183,6 +202,34 @@ const chatbotInput = document.getElementById('chatbot-input');
 const chatbotMessages = document.getElementById('chatbot-messages');
 
 let chatbotState = null; // null or { step: 'task', data: { ... } }
+let chatbotMode = 'step'; // 'step' or 'nlp', default to step-by-step
+
+// Add mode switch button
+const modeSwitchBtn = document.createElement('button');
+modeSwitchBtn.className = 'btn btn-sm btn-secondary mb-2';
+modeSwitchBtn.style.width = '100%';
+modeSwitchBtn.textContent = 'Switch to Natural Language Mode';
+modeSwitchBtn.onclick = () => {
+  chatbotMode = chatbotMode === 'step' ? 'nlp' : 'step';
+  modeSwitchBtn.textContent = chatbotMode === 'step' ? 'Switch to Natural Language Mode' : 'Switch to Step-by-Step Mode';
+  showModeBanner();
+};
+chatbotWindow.insertBefore(modeSwitchBtn, chatbotWindow.children[1]);
+
+function showModeBanner() {
+  let banner = document.getElementById('chatbot-mode-banner');
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'chatbot-mode-banner';
+    banner.style.fontSize = '0.95em';
+    banner.style.fontWeight = 'bold';
+    banner.style.marginBottom = '6px';
+    banner.style.textAlign = 'center';
+    chatbotWindow.insertBefore(banner, chatbotWindow.children[2]);
+  }
+  banner.textContent = chatbotMode === 'step' ? 'Mode: Step-by-Step' : 'Mode: Natural Language';
+}
+showModeBanner();
 
 chatbotToggle.onclick = () => {
   chatbotWindow.style.display = chatbotWindow.style.display === 'none' ? 'flex' : 'none';
@@ -194,11 +241,11 @@ chatbotForm.onsubmit = async (e) => {
   if (!userMsg) return;
   chatbotMessages.innerHTML += `<div><b>You:</b> ${userMsg}</div>`;
   chatbotInput.value = '';
-  // Send to backend with state
+  // Send to backend with state and mode
   const res = await fetch('/chatbot', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: userMsg, chatbot_state: chatbotState })
+    body: JSON.stringify({ message: userMsg, chatbot_state: chatbotState, chatbot_mode: chatbotMode })
   });
   const data = await res.json();
   chatbotState = data.next_state || null;

@@ -271,9 +271,11 @@ def user_page():
 @app.route('/chatbot', methods=['POST'])
 @login_required
 def chatbot():
+    import re
     data = request.json
     user_message = data.get('message', '').strip()
     state = data.get('chatbot_state') or {}
+    mode = data.get('chatbot_mode', 'step')
     # Task type options
     task_type_options = [
         'Decommission',
@@ -281,6 +283,52 @@ def chatbot():
         'Infra Works',
         'Relocation'
     ]
+    # --- Natural Language Mode ---
+    if mode == 'nlp':
+        # Try to extract all fields from the message
+        def extract(pattern, text):
+            m = re.search(pattern, text, re.IGNORECASE)
+            return m.group(1).strip() if m else None
+        # Try to find each field
+        site_name = extract(r'(?:site name|site)\s*[:=]?\s*([\w\s\-]+?)(?:,|$)', user_message) or extract(r'at ([\w\s\-]+?)(?:,|$)', user_message)
+        task_type = None
+        for opt in task_type_options:
+            if re.search(re.escape(opt), user_message, re.IGNORECASE):
+                task_type = opt
+                break
+        owner = extract(r'(?:owner)\s*[:=]?\s*([\w\s\-]+?)(?:,|$)', user_message)
+        contact = extract(r'(?:contact|email)\s*[:=]?\s*([\w\.-]+@[\w\.-]+)', user_message)
+        phone = extract(r'(?:phone|number)\s*[:=]?\s*([\d\-\+\s]+)', user_message)
+        summary = extract(r'(?:summary|comment)\s*[:=]?\s*([\w\s\-\.]+)', user_message)
+        # Prompt for missing fields
+        if not site_name:
+            return jsonify({'reply': 'What is the Site Name?', 'next_state': {'mode': 'nlp'}})
+        if not task_type:
+            return jsonify({'reply': 'What is the Task Type?\nOptions: ' + ', '.join(task_type_options), 'next_state': {'mode': 'nlp', 'site_name': site_name}})
+        if not owner:
+            return jsonify({'reply': 'Who is the Owner?', 'next_state': {'mode': 'nlp', 'site_name': site_name, 'task': task_type}})
+        if not contact:
+            return jsonify({'reply': 'What is the Contact Email?', 'next_state': {'mode': 'nlp', 'site_name': site_name, 'task': task_type, 'owner': owner}})
+        if not phone:
+            return jsonify({'reply': 'What is the Phone Number?', 'next_state': {'mode': 'nlp', 'site_name': site_name, 'task': task_type, 'owner': owner, 'contact': contact}})
+        # summary is optional
+        if not summary:
+            summary = ''
+        # All info collected, create the task
+        new_task = Task(
+            site_name=site_name,
+            task=task_type,
+            owner=owner,
+            contact=contact,
+            phone=phone,
+            summary=summary,
+            user_id=current_user.id
+        )
+        db.session.add(new_task)
+        db.session.commit()
+        reply = f"Task '{new_task.task}' for site '{new_task.site_name}' created!"
+        return jsonify({'reply': reply, 'next_state': None})
+    # --- Step-by-Step Mode ---
     # Multi-step task creation in correct order
     if state.get('step') == 'awaiting_site_name':
         state['data']['site_name'] = user_message
