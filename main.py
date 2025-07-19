@@ -274,20 +274,40 @@ def chatbot():
     data = request.json
     user_message = data.get('message', '').strip()
     state = data.get('chatbot_state') or {}
-    # Multi-step task creation
-    if state.get('step') == 'awaiting_task':
+    # Task type options
+    task_type_options = [
+        'Decommission',
+        'Decommission and Retrieval',
+        'Infra Works',
+        'Relocation'
+    ]
+    # Multi-step task creation in correct order
+    if state.get('step') == 'awaiting_site_name':
+        state['data']['site_name'] = user_message
+        reply = 'What is the Task Type?\nOptions: ' + ', '.join(task_type_options)
+        state['step'] = 'awaiting_task_type'
+        return jsonify({'reply': reply, 'next_state': state})
+    elif state.get('step') == 'awaiting_task_type':
+        if user_message not in task_type_options:
+            reply = 'Invalid Task Type. Please choose one of the following:\n' + ', '.join(task_type_options)
+            return jsonify({'reply': reply, 'next_state': state})
         state['data']['task'] = user_message
-        reply = 'Who is the owner of this task?'
+        reply = 'Who is the Owner?'
         state['step'] = 'awaiting_owner'
         return jsonify({'reply': reply, 'next_state': state})
     elif state.get('step') == 'awaiting_owner':
         state['data']['owner'] = user_message
-        reply = 'Who is the contact for this task?'
+        reply = 'What is the Contact Email?'
         state['step'] = 'awaiting_contact'
         return jsonify({'reply': reply, 'next_state': state})
     elif state.get('step') == 'awaiting_contact':
         state['data']['contact'] = user_message
-        reply = 'Please provide a summary for this task (or type "skip"):'
+        reply = 'What is the Phone Number?'
+        state['step'] = 'awaiting_phone'
+        return jsonify({'reply': reply, 'next_state': state})
+    elif state.get('step') == 'awaiting_phone':
+        state['data']['phone'] = user_message
+        reply = 'Please provide a Task Summary (or type "skip"):'
         state['step'] = 'awaiting_summary'
         return jsonify({'reply': reply, 'next_state': state})
     elif state.get('step') == 'awaiting_summary':
@@ -295,20 +315,22 @@ def chatbot():
         state['data']['summary'] = summary
         # All info collected, create the task
         new_task = Task(
+            site_name=state['data']['site_name'],
             task=state['data']['task'],
             owner=state['data']['owner'],
             contact=state['data']['contact'],
+            phone=state['data']['phone'],
             summary=state['data']['summary'],
             user_id=current_user.id
         )
         db.session.add(new_task)
         db.session.commit()
-        reply = f"Task '{new_task.task}' created!"
+        reply = f"Task '{new_task.task}' for site '{new_task.site_name}' created!"
         return jsonify({'reply': reply, 'next_state': None})
     # Start task creation if prompted
     if 'create task' in user_message.lower() or 'add task' in user_message.lower():
-        reply = 'What is the name of the task?'
-        state = {'step': 'awaiting_task', 'data': {}}
+        reply = 'What is the Site Name?'
+        state = {'step': 'awaiting_site_name', 'data': {}}
         return jsonify({'reply': reply, 'next_state': state})
     # Default reply
     return jsonify({'reply': "I'm your assistant! Ask me to create a task or help with your dashboard.", 'next_state': None})
