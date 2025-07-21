@@ -375,13 +375,37 @@ def chatbot():
         db.session.commit()
         reply = f"Task '{new_task.task}' for site '{new_task.site_name}' created!"
         return jsonify({'reply': reply, 'next_state': None})
-    # Start task creation if prompted
-    if 'create task' in user_message.lower() or 'add task' in user_message.lower():
+    # --- Instructional Responses ---
+    help_intents = [
+        (['how do i create a task', 'how to create a task', 'create task manually', 'add task manually'],
+         "To create a new task: Click on the 'Add Task' button or navigate to the task creation section. Enter the task details such as title, description, and due date, then click 'Save' or 'Create'. Your new task will appear in the task list."),
+        (['how do i delete a task', 'how to delete a task', 'remove a task', 'delete task'],
+         "To delete a task: Find the task you want to remove in your task list. Click the 'Delete' button (usually a trash can icon) next to the task. Confirm the deletion if prompted. The task will be permanently removed."),
+        (['how do i edit a task', 'how to edit a task', 'edit task', 'modify a task'],
+         "To edit a task: Locate the task you wish to modify. Click the 'Edit' button (often a pencil icon) next to the task. Update the task details as needed, then click 'Save' to apply your changes."),
+        (['how do i view a task', 'how to view a task', 'view task', 'see task details'],
+         "To view a task: Browse your task list and click on the task you want to view. This will display the full details of the task, including its description, due date, and status."),
+        (['how do i save a task', 'how to save a task', 'save task'],
+         "To save a task: After entering or editing task details, click the 'Save' button. This will store your changes and update the task list accordingly.")
+    ]
+    name_intents = ['what is your name', "what's your name", 'who are you', 'your name']
+    
+    # Check for instructional intents
+    lower_msg = user_message.lower()
+    for triggers, response in help_intents:
+        if any(trigger in lower_msg for trigger in triggers):
+            return jsonify({'reply': response, 'next_state': None})
+    if any(name in lower_msg for name in name_intents):
+        return jsonify({'reply': "My name is Junate, your assistant for managing tasks efficiently!", 'next_state': None})
+    
+    # Start task creation if 
+    message_options = ['create task', 'add task', 'create a task', 'add a task', 'please create me task', 'I want to create a task']
+    if any(option in user_message.lower() for option in message_options):   
         reply = 'What is the Site Name?'
         state = {'step': 'awaiting_site_name', 'data': {}}
         return jsonify({'reply': reply, 'next_state': state})
     # Default reply
-    return jsonify({'reply': "I'm your assistant! Ask me to create a task or help with your dashboard.", 'next_state': None})
+    return jsonify({'reply': "Hi, it's your boy, Junate! Ask me to create a task or help with your dashboard.", 'next_state': None})
 
 if __name__ == '__main__':
     app.run(debug=True)
