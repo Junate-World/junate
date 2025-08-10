@@ -399,7 +399,7 @@ def chatbot():
         return jsonify({'reply': "My name is Junate, your assistant for managing tasks efficiently!", 'next_state': None})
     
     # Start task creation if 
-    message_options = ['create task', 'add task', 'create a task', 'add a task', 'please create me task', 'I want to create a task']
+    message_options = ['create task', 'add task', 'create a task', 'add a task', 'please create me a task', 'I want to create a task']
     if any(option in user_message.lower() for option in message_options):   
         reply = 'What is the Site Name?'
         state = {'step': 'awaiting_site_name', 'data': {}}
