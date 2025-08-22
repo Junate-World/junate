@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - Junate World Project Management Tool</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      min-height: 100vh;
+    }
+    .navbar {
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(10px);
+    }
+    .hero-section {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      padding: 4rem 0;
+      margin-bottom: 3rem;
+    }
+    .feature-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      height: 100%;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      color: white;
+      font-size: 1.5rem;
+    }
+    .stats-section {
+      background: white;
+      padding: 3rem 0;
+      margin: 3rem 0;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 2rem;
+    }
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #6366f1;
+      margin-bottom: 0.5rem;
+    }
+    .cta-section {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: white;
+      padding: 4rem 0;
+      margin-top: 3rem;
+    }
+    .btn-custom {
+      padding: 0.75rem 2rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .btn-primary-custom {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      color: white;
+    }
+    .btn-primary-custom:hover {
+      background: linear-gradient(135deg, #5855eb, #7c3aed);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+    .benefit-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 0.5rem;
+    }
+    .benefit-icon {
+      color: #10b981;
+      margin-right: 1rem;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold fs-4" href="/">
+        <i class="bi bi-kanban text-primary"></i> Junate World
+      </a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link active" href="/about">About</a>
+        <a class="nav-link" href="/" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+        <a class="nav-link" href="/" data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</a>
+      </div>
+    </div>
+  </nav> 
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container text-center">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <h1 class="display-4 fw-bold mb-4">Project Management Made Simple</h1>
+          <p class="lead mb-4">Streamline your workflow, track progress, and boost productivity with our comprehensive project management solution.</p>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="/" class="btn btn-light btn-custom" data-bs-toggle="modal" data-bs-target="#signupModal">
+              <i class="bi bi-rocket-takeoff"></i> Get Started Free
+            </a>
+            <a href="#features" class="btn btn-outline-light btn-custom">
+              <i class="bi bi-info-circle"></i> Learn More
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold mb-3">Powerful Features</h2>
+        <p class="lead text-muted">Everything you need to manage projects effectively</p>
+      </div>
+      
+      <div class="row g-4">
+        <div class="col-lg-4 col-md-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi bi-list-task"></i>
+            </div>
+            <h4>Task Management</h4>
+            <p class="text-muted">Create, organize, and track tasks with detailed information including owners, contacts, and site details.</p>
+            <ul class="list-unstyled">
+              <li><i class="bi bi-check-circle text-success me-2"></i>Task creation and editing</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Status tracking (Active, On Hold, Closed)</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Contact information management</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <h4>Progress Tracking</h4>
+            <p class="text-muted">Monitor project progress with real-time dashboards and comprehensive reporting.</p>
+            <ul class="list-unstyled">
+              <li><i class="bi bi-check-circle text-success me-2"></i>Real-time progress updates</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Visual dashboard analytics</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Cost tracking and management</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi bi-people"></i>
+            </div>
+            <h4>Team Collaboration</h4>
+            <p class="text-muted">Work together seamlessly with team member management and communication tools.</p>
+            <ul class="list-unstyled">
+              <li><i class="bi bi-check-circle text-success me-2"></i>User registration and management</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Secure authentication system</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Individual task ownership</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi bi-search"></i>
+            </div>
+            <h4>Advanced Search</h4>
+            <p class="text-muted">Find tasks quickly with powerful search capabilities across all project data.</p>
+            <ul class="list-unstyled">
+              <li><i class="bi bi-check-circle text-success me-2"></i>Search by task name</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Filter by owner or site</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Status-based filtering</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi bi-chat-dots"></i>
+            </div>
+            <h4>AI-Powered Chatbot</h4>
+            <p class="text-muted">Get instant help and answers with our intelligent chatbot assistant.</p>
+            <ul class="list-unstyled">
+              <li><i class="bi bi-check-circle text-success me-2"></i>24/7 support availability</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Quick task assistance</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Project guidance</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-6">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi bi-shield-check"></i>
+            </div>
+            <h4>Security & Reliability</h4>
+            <p class="text-muted">Your data is protected with enterprise-grade security and reliable infrastructure.</p>
+            <ul class="list-unstyled">
+              <li><i class="bi bi-check-circle text-success me-2"></i>Secure password hashing</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Email verification system</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Data backup and recovery</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h2 class="display-6 fw-bold mb-4">Why Choose Junate World?</h2>
+          <p class="lead text-muted mb-4">Our project management tool is designed to help teams work more efficiently and deliver better results.</p>
+          
+          <div class="benefit-item">
+            <i class="bi bi-lightning-charge benefit-icon"></i>
+            <div>
+              <h5 class="mb-1">Increased Productivity</h5>
+              <p class="text-muted mb-0">Streamline workflows and eliminate bottlenecks with organized task management.</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item">
+            <i class="bi bi-eye benefit-icon"></i>
+            <div>
+              <h5 class="mb-1">Better Visibility</h5>
+              <p class="text-muted mb-0">Get clear insights into project progress and team performance.</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item">
+            <i class="bi bi-arrow-repeat benefit-icon"></i>
+            <div>
+              <h5 class="mb-1">Improved Collaboration</h5>
+              <p class="text-muted mb-0">Foster better teamwork with shared project information and communication.</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item">
+            <i class="bi bi-graph-up-arrow benefit-icon"></i>
+            <div>
+              <h5 class="mb-1">Cost Control</h5>
+              <p class="text-muted mb-0">Track project and execution costs to stay within budget.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-6">
+          <div class="text-center">
+            <img src="https://placehold.co/500x400/6366f1/ffffff?text=Project+Management" alt="Project Management" class="img-fluid rounded-pill shadow">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-number">100%</div>
+            <p class="text-muted">Secure</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-number">24/7</div>
+            <p class="text-muted">Support</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-number">Easy</div>
+            <p class="text-muted">Setup</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-number">Free</div>
+            <p class="text-muted">Trial</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container text-center">
+      <h2 class="display-5 fw-bold mb-4">Ready to Get Started?</h2>
+      <p class="lead mb-4">Join thousands of teams who are already using Junate World to manage their projects more effectively.</p>
+      <div class="d-flex justify-content-center gap-3">
+        <a href="/" class="btn btn-primary-custom btn-custom" data-bs-toggle="modal" data-bs-target="#signupModal">
+          <i class="bi bi-person-plus"></i> Create Free Account
+        </a>
+        <a href="/" class="btn btn-outline-light btn-custom" data-bs-toggle="modal" data-bs-target="#loginModal">
+          <i class="bi bi-box-arrow-in-right"></i> Sign In
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-light py-4">
+    <div class="container text-center">
+      <p class="mb-0">&copy; 2024 Junate World Project Management Tool. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Authentication Modals -->
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm">
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="loginEmail" required>
+            </div>
+            <div class="mb-3">
+              <label for="loginPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="loginPassword" required>
+            </div>
+            <div class="mb-2 text-end">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#forgotModal" data-bs-dismiss="modal">Forgot password?</a>
+            </div>
+            <div id="loginMsg" class="mb-2 text-danger"></div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="signupForm">
+            <div class="mb-3">
+              <label for="signupFullName" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="signupFullName" required>
+            </div>
+            <div class="mb-3">
+              <label for="signupEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="signupEmail" required>
+            </div>
+            <div class="mb-3">
+              <label for="signupPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="signupPassword" required>
+            </div>
+            <div class="mb-3">
+              <label for="signupConfirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="signupConfirmPassword" required>
+            </div>
+            <div id="signupMsg" class="mb-2 text-danger"></div>
+            <button type="submit" class="btn btn-success w-100">Sign Up</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal fade" id="forgotModal" tabindex="-1" aria-labelledby="forgotModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="forgotModalLabel">Forgot Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="forgotForm">
+            <div class="mb-3">
+              <label for="forgotEmail" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="forgotEmail" required>
+            </div>
+            <div id="forgotMsg" class="mb-2 text-danger"></div>
+            <button type="submit" class="btn btn-warning w-100">Send Reset Link</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+
+    // Authentication form handling
+    // Login AJAX
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const msg = document.getElementById('loginMsg');
+        msg.textContent = '';
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          msg.classList.remove('text-danger');
+          msg.classList.add('text-success');
+          msg.textContent = 'Login successful! Redirecting...';
+          setTimeout(() => { window.location.href = '/user'; }, 1000);
+        } else {
+          msg.classList.remove('text-success');
+          msg.classList.add('text-danger');
+          msg.textContent = data.message || 'Login failed.';
+        }
+      });
+    }
+
+    // Sign Up AJAX
+    const signupForm = document.getElementById('signupForm');
+    if (signupForm) {
+      console.log('Sign-up form found and event listener attached');
+      signupForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        console.log('Sign-up form submitted');
+        const full_name = document.getElementById('signupFullName').value;
+        const email = document.getElementById('signupEmail').value;
+        const password = document.getElementById('signupPassword').value;
+        const confirmPassword = document.getElementById('signupConfirmPassword').value;
+        const msg = document.getElementById('signupMsg');
+        msg.textContent = '';
+        console.log('Form data:', { full_name, email, password: '***', confirmPassword: '***' });
+        if (password !== confirmPassword) {
+          msg.classList.remove('text-success');
+          msg.classList.add('text-danger');
+          msg.textContent = 'Passwords do not match.';
+          return;
+        }
+        try {
+          console.log('Sending fetch request to /register');
+          const res = await fetch('/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ full_name, email, password })
+          });
+          console.log('Response received:', res.status, res.statusText);
+          const data = await res.json();
+          console.log('Response data:', data);
+          if (data.status === 'success') {
+            msg.classList.remove('text-danger');
+            msg.classList.add('text-success');
+            msg.textContent = 'Sign up successful! Please log in with your new credentials.';
+            signupForm.reset();
+            setTimeout(() => {
+              const signupModal = bootstrap.Modal.getInstance(document.getElementById('signupModal'));
+              if (signupModal) signupModal.hide();
+              const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+              loginModal.show();
+            }, 1500);
+          } else {
+            msg.classList.remove('text-success');
+            msg.classList.add('text-danger');
+            msg.textContent = data.message || 'Sign up failed.';
+          }
+        } catch (error) {
+          console.error('Error during sign-up:', error);
+          msg.classList.remove('text-success');
+          msg.classList.add('text-danger');
+          msg.textContent = 'Network error. Please try again.';
+        }
+      });
+    } else {
+      console.error('Sign-up form not found!');
+    }
+
+    // Forgot Password AJAX
+    const forgotForm = document.getElementById('forgotForm');
+    if (forgotForm) {
+      forgotForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('forgotEmail').value;
+        const msg = document.getElementById('forgotMsg');
+        msg.textContent = '';
+        const res = await fetch('/forgot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          msg.classList.remove('text-danger');
+          msg.classList.add('text-success');
+          msg.textContent = data.message || 'Check your email for reset instructions.';
+        } else {
+          msg.classList.remove('text-success');
+          msg.classList.add('text-danger');
+          msg.textContent = data.message || 'No account found.';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

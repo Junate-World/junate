@@ -12,7 +12,7 @@
     .task-card .card-body {
       display: flex;
       flex-direction: column;
-      height: 400px;
+      height: 420px;
       overflow: hidden;
     }
     .truncate-2 {
@@ -89,6 +89,7 @@
         </button>
       </div>
       <a href="/user" class="btn btn-outline-primary">Back to User Page</a>
+      <a href="/progress" class="btn btn-outline-success ms-2">Progress Report</a>
       <form id="logoutForm" method="post" action="/logout" class="d-inline ms-2">
         <button type="submit" class="btn btn-danger">Logout</button>
       </form>
@@ -118,6 +119,12 @@
       </div>
       <div class="col-12 col-md-2">
         <input type="text" class="form-control" id="summaryInput" placeholder="Task Summary/Comment" required>
+      </div>
+      <div class="col-12 col-md-2">
+        <input type="number" inputmode="numeric" min="0" step="1" class="form-control" id="projectCostInput" placeholder="Project Cost (₦)" required>
+      </div>
+      <div class="col-12 col-md-2">
+        <input type="number" inputmode="numeric" min="0" step="1" class="form-control" id="executionCostInput" placeholder="Execution Cost (₦)" required>
       </div>
       <div class="w-100"></div>
       <div class="col-12 d-flex justify-content-center">
@@ -161,6 +168,8 @@
             <p class="card-text mb-1"><strong>Owner:</strong> <span class="editable" contenteditable="true" data-field="owner">{{ task.owner }}</span></p>
             <p class="card-text mb-1"><strong>Contact Email:</strong><br> <span class="editable" contenteditable="true" data-field="contact">{{ task.contact }}</span></p>
             <p class="card-text mb-1"><strong>Phone:</strong> <span class="editable" contenteditable="true" data-field="phone">{{ task.phone }}</span></p>
+            <p class="card-text mb-1"><strong>Project Cost (₦):</strong> <span class="editable" contenteditable="true" data-field="project_cost">{{ task.project_cost or 0 }}</span></p>
+            <p class="card-text mb-1"><strong>Execution Cost (₦):</strong> <span class="editable" contenteditable="true" data-field="execution_cost">{{ task.execution_cost or 0 }}</span></p>
             <p class="card-text mb-3 truncate-2"><strong>Summary/Comment:</strong> <span class="editable" contenteditable="true" data-field="summary">{{ task.summary }}</span></p>
             <!-- Status Buttons Row -->
             <div class="d-flex justify-content-between align-items-center gap-2 mb-2">

@@ -8,6 +8,12 @@ $(document).ready(function() {
         const contact = $('#contactInput').val().trim();
         const phone = $('#phoneInput').val().trim();
         const summary = $('#summaryInput').val().trim();
+        const project_cost = parseInt($('#projectCostInput').val(), 10);
+        const execution_cost = parseInt($('#executionCostInput').val(), 10);
+        if (isNaN(project_cost) || project_cost < 0 || isNaN(execution_cost) || execution_cost < 0) {
+            alert('Project Cost and Execution Cost must be non-negative integers');
+            return;
+        }
         if (!task) {
             alert('Please select a task type');
             return;
@@ -16,7 +22,7 @@ $(document).ready(function() {
             url: '/add',
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ site_name, task, owner, contact, phone, summary }),
+            data: JSON.stringify({ site_name, task, owner, contact, phone, summary, project_cost, execution_cost }),
             success: function(newTask) {
                 // Format created_at for display
                 let createdAt = '';
@@ -37,6 +43,8 @@ $(document).ready(function() {
                         <p class=\"card-text mb-1\"><strong>Owner:</strong> <span class=\"editable\" contenteditable=\"true\" data-field=\"owner\">${newTask.owner}</span></p>\
                         <p class=\"card-text mb-1\"><strong>Contact Email:</strong> <span class=\"editable\" contenteditable=\"true\" data-field=\"contact\">${newTask.contact}</span></p>\
                         <p class=\"card-text mb-1\"><strong>Phone:</strong> <span class=\"editable\" contenteditable=\"true\" data-field=\"phone\">${newTask.phone}</span></p>\
+                        <p class=\"card-text mb-1\"><strong>Project Cost (₦):</strong> <span class=\"editable\" contenteditable=\"true\" data-field=\"project_cost\">${newTask.project_cost ?? 0}</span></p>\
+                        <p class=\"card-text mb-1\"><strong>Execution Cost (₦):</strong> <span class=\"editable\" contenteditable=\"true\" data-field=\"execution_cost\">${newTask.execution_cost ?? 0}</span></p>\
                         <p class=\"card-text mb-3 truncate-2\"><strong>Summary/Comment:</strong> <span class=\"editable\" contenteditable=\"true\" data-field=\"summary\">${newTask.summary}</span></p>\
                         <div class=\"d-flex justify-content-between align-items-center gap-2 mt-auto pt-2 border-top\">\
                           <button class=\"btn btn-sm btn-primary flex-fill save-btn\">Save</button>\
@@ -65,11 +73,19 @@ $(document).ready(function() {
         const contact = card.find('[data-field="contact"]').text().trim();
         const phone = card.find('[data-field="phone"]').text().trim();
         const summary = card.find('[data-field="summary"]').text().trim();
+        const project_cost_text = card.find('[data-field="project_cost"]').text().trim();
+        const execution_cost_text = card.find('[data-field="execution_cost"]').text().trim();
+        const project_cost = parseInt(project_cost_text, 10);
+        const execution_cost = parseInt(execution_cost_text, 10);
+        if (isNaN(project_cost) || project_cost < 0 || isNaN(execution_cost) || execution_cost < 0) {
+            alert('Project Cost and Execution Cost must be non-negative integers');
+            return;
+        }
         $.ajax({
             url: '/update',
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ id, site_name, task, owner, contact, phone, summary }),
+            data: JSON.stringify({ id, site_name, task, owner, contact, phone, summary, project_cost, execution_cost }),
             success: function(response) {
                 alert('Task updated successfully');
             },
@@ -111,11 +127,19 @@ $(document).ready(function() {
         const contact = card.find('[data-field="contact"]').text().trim();
         const phone = card.find('[data-field="phone"]').text().trim();
         const summary = card.find('[data-field="summary"]').text().trim();
+        const project_cost_text = card.find('[data-field="project_cost"]').text().trim();
+        const execution_cost_text = card.find('[data-field="execution_cost"]').text().trim();
+        const project_cost = parseInt(project_cost_text, 10);
+        const execution_cost = parseInt(execution_cost_text, 10);
+        if (isNaN(project_cost) || project_cost < 0 || isNaN(execution_cost) || execution_cost < 0) {
+            alert('Project Cost and Execution Cost must be non-negative integers');
+            return;
+        }
         $.ajax({
             url: '/update',
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ id, site_name, task, owner, contact, phone, summary, status: newStatus }),
+            data: JSON.stringify({ id, site_name, task, owner, contact, phone, summary, project_cost, execution_cost, status: newStatus }),
             success: function(response) {
                 // Update indicator
                 card.find('.status-indicator').attr('data-status', newStatus);
