@@ -8,6 +8,46 @@
     <style>
         .container { max-width: 1100px; }
         .table thead th { white-space: nowrap; }
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .d-flex.justify-content-between {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch !important;
+            }
+            .d-flex.justify-content-between > div {
+                text-align: center;
+            }
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .table-responsive {
+                font-size: 0.9rem;
+            }
+            .table th,
+            .table td {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.8rem;
+            }
+        }
+        @media (max-width: 576px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+            .table th,
+            .table td {
+                padding: 0.25rem 0.1rem;
+                font-size: 0.7rem;
+            }
+            .btn {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+            }
+        }
     </style>
     <script>
         function downloadCsv() {
