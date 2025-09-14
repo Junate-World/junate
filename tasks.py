@@ -1,6 +1,6 @@
-from flask import Blueprint, request, jsonify, render_template, Response, url_for
+from flask import Blueprint, request, jsonify, render_template, Response, url_for, abort
 from flask_login import login_required, current_user
-from models import db, Task
+from models import db, Task, User
 
 tasks_bp = Blueprint('tasks', __name__)
 
@@ -180,3 +180,45 @@ def download_progress_csv():
         'Content-Disposition': 'attachment; filename="progress_report.csv"'
     }
     return Response(generate_csv(), mimetype='text/csv', headers=headers)
+
+# Visitor dashboard (read-only)
+@tasks_bp.route('/view/<int:user_id>/dashboard')
+def visitor_dashboard(user_id):
+    user = User.query.get_or_404(user_id)
+    tasks = Task.query.filter_by(user_id=user.id).all()
+    total_tasks = len(tasks)
+    active_count = sum(1 for t in tasks if t.status == 'Active')
+    onhold_count = sum(1 for t in tasks if t.status == 'On hold')
+    closed_count = sum(1 for t in tasks if t.status == 'Closed')
+    return render_template('dashboard.html', tasks=tasks, total_tasks=total_tasks, active_count=active_count, onhold_count=onhold_count, closed_count=closed_count, visitor_mode=True, user=user)
+
+# Visitor task view (read-only)
+@tasks_bp.route('/view/<int:user_id>/task/<int:task_id>')
+def visitor_task_view(user_id, task_id):
+    user = User.query.get_or_404(user_id)
+    task = Task.query.filter_by(id=task_id, user_id=user.id).first_or_404()
+    return render_template('task_view.html', task=task, visitor_mode=True, user=user)
+
+# Visitor progress report (read-only)
+@tasks_bp.route('/view/<int:user_id>/progress')
+def visitor_progress_report(user_id):
+    user = User.query.get_or_404(user_id)
+    tasks = Task.query.filter_by(user_id=user.id).all()
+    report_rows = [
+        {
+            'site_name': t.site_name or '',
+            'task': t.task or '',
+            'owner': t.owner or '',
+            'status': t.status or '',
+            'summary': t.summary or '',
+            'project_cost': getattr(t, 'project_cost', 0) or 0,
+            'execution_cost': getattr(t, 'execution_cost', 0) or 0,
+            'profit_percent': (
+                (round(((getattr(t, 'project_cost', 0) or 0) - (getattr(t, 'execution_cost', 0) or 0)) * 100.0 / (getattr(t, 'project_cost', 0) or 1), 2))
+                if (getattr(t, 'project_cost', 0) or 0) > 0 else 0.0
+            )
+        }
+        for t in tasks
+    ]
+    return render_template('progress_report.html', rows=report_rows, visitor_mode=True, user=user)
+

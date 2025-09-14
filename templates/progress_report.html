@@ -62,7 +62,16 @@
         <h2 class="mb-0">Progress Report</h2>
         <div>
             <a class="btn btn-outline-secondary me-2" href="/dashboard">Back to Dashboard</a>
+            <!-- ...existing code... -->
+{% if visitor_mode %}
+    <!-- Hide download/export/report modification options for visitors -->
+{% else %}
+    <!-- Show download/export/report modification options for authenticated users -->
+    <!-- ...existing code for modification actions... -->
             <a class="btn btn-primary" href="/progress.csv">Download CSV</a>
+
+            {% endif %}
+<!-- ...existing code... -->
         </div>
     </div>
 

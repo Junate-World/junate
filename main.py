@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import os
 from datetime import timedelta
 from flask_login import LoginManager, current_user
@@ -72,6 +72,73 @@ def home():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/budget')
+def budget_dashboard():
+    from models import Task
+    from sqlalchemy import func, extract
+    from datetime import datetime
+    
+    # Get year filter from query parameters
+    year_filter = request.args.get('year', datetime.now().year, type=int)
+    
+    # Base query for user's tasks
+    base_query = Task.query.filter_by(user_id=current_user.id)
+    
+    # Apply year filter
+    if year_filter:
+        year_query = base_query.filter(extract('year', Task.created_at) == year_filter)
+    else:
+        year_query = base_query
+    
+    # Calculate budget metrics
+    total_sites = year_query.count()
+    total_project_cost = year_query.with_entities(func.sum(Task.project_cost)).scalar() or 0
+    total_execution_cost = year_query.with_entities(func.sum(Task.execution_cost)).scalar() or 0
+    total_profit = total_project_cost - total_execution_cost
+    profit_percentage = (total_profit / total_project_cost * 100) if total_project_cost > 0 else 0
+    
+    # Get monthly data for charts
+    monthly_data = year_query.with_entities(
+        extract('month', Task.created_at).label('month'),
+        func.count(Task.id).label('sites_count'),
+        func.sum(Task.project_cost).label('project_cost'),
+        func.sum(Task.execution_cost).label('execution_cost')
+    ).group_by(extract('month', Task.created_at)).all()
+    
+    # Get available years for filter dropdown
+    available_years = base_query.with_entities(
+        extract('year', Task.created_at).label('year')
+    ).distinct().order_by(extract('year', Task.created_at).desc()).all()
+    
+    # Format monthly data for charts
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    chart_data = {
+        'months': months,
+        'sites': [0] * 12,
+        'project_costs': [0] * 12,
+        'execution_costs': [0] * 12,
+        'profits': [0] * 12
+    }
+    
+    for data in monthly_data:
+        month_idx = int(data.month) - 1
+        chart_data['sites'][month_idx] = data.sites_count or 0
+        chart_data['project_costs'][month_idx] = data.project_cost or 0
+        chart_data['execution_costs'][month_idx] = data.execution_cost or 0
+        chart_data['profits'][month_idx] = (data.project_cost or 0) - (data.execution_cost or 0)
+    
+    return render_template('budget_dashboard.html',
+                         total_sites=total_sites,
+                         total_project_cost=total_project_cost,
+                         total_execution_cost=total_execution_cost,
+                         total_profit=total_profit,
+                         profit_percentage=profit_percentage,
+                         year_filter=year_filter,
+                         available_years=[y.year for y in available_years],
+                         chart_data=chart_data)
 
 if __name__ == '__main__':
     app.run(debug=True)

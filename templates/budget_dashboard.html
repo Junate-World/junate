@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget Dashboard</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='my-favicon.ico') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .metric-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 15px;
+      color: white;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .metric-card.success {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    .metric-card.warning {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    .metric-card.info {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    .metric-card.danger {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+    .metric-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .metric-label {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+    .chart-container {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+    .year-filter {
+      background: white;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+    .profit-positive {
+      color: #28a745;
+    }
+    .profit-negative {
+      color: #dc3545;
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      z-index: 10;
+    }
+    body.dark-mode {
+      background: #1a1a1a;
+      color: #ffffff;
+    }
+    body.dark-mode .chart-container,
+    body.dark-mode .year-filter {
+      background: #2d2d2d;
+      color: #ffffff;
+    }
+    body.dark-mode .metric-card {
+      background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%);
+    }
+    @media (max-width: 768px) {
+      .metric-value {
+        font-size: 2rem;
+      }
+      .chart-container {
+        padding: 1rem;
+      }
+      .theme-toggle {
+        position: static;
+        margin: 1rem 0;
+      }
+    }
+  </style>
+</head>
+<body class="p-4 bg-light" id="mainBody">
+  <div class="theme-toggle" style="display:none;"></div>
+  <div class="container position-relative">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <h2 class="mb-0"><i class="bi bi-graph-up"></i> Budget Dashboard</h2>
+        <button id="themeToggler" class="btn btn-outline-secondary ms-2" title="Toggle light/dark mode">
+          <span id="themeIcon" class="bi bi-moon"></span>
+        </button>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="/dashboard" class="btn btn-outline-primary">
+          <i class="bi bi-house"></i> Dashboard
+        </a>
+        <a href="/progress" class="btn btn-outline-success">
+          <i class="bi bi-bar-chart"></i> Progress Report
+        </a>
+        <form method="post" action="/logout" class="d-inline">
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Year Filter -->
+    <div class="year-filter">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h5 class="mb-0"><i class="bi bi-calendar3"></i> Filter by Year</h5>
+        </div>
+        <div class="col-md-6">
+          <form method="GET" class="d-flex gap-2">
+            <select name="year" class="form-select" onchange="this.form.submit()">
+              {% for year in available_years %}
+                <option value="{{ year }}" {% if year == year_filter %}selected{% endif %}>{{ year }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-funnel"></i> Filter
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card metric-card success h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-building display-4 mb-3"></i>
+            <div class="metric-value">{{ total_sites }}</div>
+            <div class="metric-label">Total Sites Created</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card metric-card info h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-currency-dollar display-4 mb-3"></i>
+            <div class="metric-value">₦{{ "{:,}".format(total_project_cost) }}</div>
+            <div class="metric-label">Total Project Cost</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card metric-card warning h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-cash-stack display-4 mb-3"></i>
+            <div class="metric-value">₦{{ "{:,}".format(total_execution_cost) }}</div>
+            <div class="metric-label">Total Execution Cost</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card metric-card {% if total_profit >= 0 %}success{% else %}danger{% endif %} h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-graph-up-arrow display-4 mb-3"></i>
+            <div class="metric-value {% if total_profit >= 0 %}profit-positive{% else %}profit-negative{% endif %}">
+              ₦{{ "{:,}".format(total_profit) }}
+            </div>
+            <div class="metric-label">
+              Total Profit ({{ "{:.1f}".format(profit_percentage) }}%)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row">
+      <!-- Sites Created Chart -->
+      <div class="col-lg-6 mb-4">
+        <div class="chart-container">
+          <h5 class="mb-3"><i class="bi bi-bar-chart-line"></i> Sites Created by Month</h5>
+          <canvas id="sitesChart" height="300"></canvas>
+        </div>
+      </div>
+      
+      <!-- Cost Comparison Chart -->
+      <div class="col-lg-6 mb-4">
+        <div class="chart-container">
+          <h5 class="mb-3"><i class="bi bi-pie-chart"></i> Cost Distribution</h5>
+          <canvas id="costChart" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Monthly Costs Chart -->
+      <div class="col-lg-8 mb-4">
+        <div class="chart-container">
+          <h5 class="mb-3"><i class="bi bi-graph-up"></i> Monthly Costs & Profits</h5>
+          <canvas id="monthlyCostsChart" height="300"></canvas>
+        </div>
+      </div>
+      
+      <!-- Profit Trend Chart -->
+      <div class="col-lg-4 mb-4">
+        <div class="chart-container">
+          <h5 class="mb-3"><i class="bi bi-trending-up"></i> Profit Trend</h5>
+          <canvas id="profitTrendChart" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Chart data from backend
+    const chartData = {{ chart_data | tojson }};
+    
+    // Sites Created Chart
+    const sitesCtx = document.getElementById('sitesChart').getContext('2d');
+    new Chart(sitesCtx, {
+      type: 'bar',
+      data: {
+        labels: chartData.months,
+        datasets: [{
+          label: 'Sites Created',
+          data: chartData.sites,
+          backgroundColor: 'rgba(54, 162, 235, 0.8)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
+
+    // Cost Distribution Pie Chart
+    const costCtx = document.getElementById('costChart').getContext('2d');
+    new Chart(costCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Project Cost', 'Execution Cost'],
+        datasets: [{
+          data: [{{ total_project_cost }}, {{ total_execution_cost }}],
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(255, 99, 132, 0.8)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 99, 132, 1)'
+          ],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+    // Monthly Costs Chart
+    const monthlyCostsCtx = document.getElementById('monthlyCostsChart').getContext('2d');
+    new Chart(monthlyCostsCtx, {
+      type: 'line',
+      data: {
+        labels: chartData.months,
+        datasets: [
+          {
+            label: 'Project Cost',
+            data: chartData.project_costs,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+          },
+          {
+            label: 'Execution Cost',
+            data: chartData.execution_costs,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+          },
+          {
+            label: 'Profit',
+            data: chartData.profits,
+            borderColor: 'rgba(54, 162, 235, 1)',
+            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return '₦' + value.toLocaleString();
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Profit Trend Chart
+    const profitTrendCtx = document.getElementById('profitTrendChart').getContext('2d');
+    const profitData = chartData.profits;
+    const positiveProfits = profitData.filter(p => p >= 0).length;
+    const negativeProfits = profitData.filter(p => p < 0).length;
+    
+    new Chart(profitTrendCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Profitable Months', 'Loss Months'],
+        datasets: [{
+          data: [positiveProfits, negativeProfits],
+          backgroundColor: [
+            'rgba(40, 167, 69, 0.8)',
+            'rgba(220, 53, 69, 0.8)'
+          ],
+          borderColor: [
+            'rgba(40, 167, 69, 1)',
+            'rgba(220, 53, 69, 1)'
+          ],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+    // Theme toggler logic
+    function setTheme(dark) {
+      const body = document.getElementById('mainBody');
+      if (dark) {
+        body.classList.remove('bg-light');
+        body.classList.add('bg-dark', 'text-light');
+        document.querySelectorAll('.chart-container, .year-filter').forEach(container => {
+          container.classList.add('bg-dark', 'text-light');
+        });
+        document.getElementById('themeIcon').className = 'bi bi-sun';
+      } else {
+        body.classList.remove('bg-dark', 'text-light');
+        body.classList.add('bg-light');
+        document.querySelectorAll('.chart-container, .year-filter').forEach(container => {
+          container.classList.remove('bg-dark', 'text-light');
+        });
+        document.getElementById('themeIcon').className = 'bi bi-moon';
+      }
+    }
+    
+    function getThemePref() {
+      return localStorage.getItem('theme') === 'dark';
+    }
+    
+    function saveThemePref(dark) {
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      let dark = getThemePref();
+      setTheme(dark);
+      document.getElementById('themeToggler').onclick = function() {
+        dark = !dark;
+        setTheme(dark);
+        saveThemePref(dark);
+      };
+    });
+  </script>
+</body>
+</html>
