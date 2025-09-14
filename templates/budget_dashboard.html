@@ -41,13 +41,19 @@
       font-size: 1rem;
       opacity: 0.9;
     }
-    .chart-container {
-      background: white;
-      border-radius: 15px;
-      padding: 2rem;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      margin-bottom: 2rem;
-    }
+     .chart-container {
+       background: white;
+       border-radius: 15px;
+       padding: 2rem;
+       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+       margin-bottom: 2rem;
+       position: relative;
+       height: 400px;
+     }
+     .chart-container canvas {
+       max-height: 300px !important;
+       width: 100% !important;
+     }
     .year-filter {
       background: white;
       border-radius: 10px;
@@ -79,18 +85,22 @@
     body.dark-mode .metric-card {
       background: linear-gradient(135deg, #2d2d2d 0%, #404040 100%);
     }
-    @media (max-width: 768px) {
-      .metric-value {
-        font-size: 2rem;
-      }
-      .chart-container {
-        padding: 1rem;
-      }
-      .theme-toggle {
-        position: static;
-        margin: 1rem 0;
-      }
-    }
+     @media (max-width: 768px) {
+       .metric-value {
+         font-size: 2rem;
+       }
+       .chart-container {
+         padding: 1rem;
+         height: 350px;
+       }
+       .chart-container canvas {
+         max-height: 250px !important;
+       }
+       .theme-toggle {
+         position: static;
+         margin: 1rem 0;
+       }
+     }
   </style>
 </head>
 <body class="p-4 bg-light" id="mainBody">
@@ -190,7 +200,7 @@
       <div class="col-lg-6 mb-4">
         <div class="chart-container">
           <h5 class="mb-3"><i class="bi bi-bar-chart-line"></i> Sites Created by Month</h5>
-          <canvas id="sitesChart" height="200"></canvas>
+           <canvas id="sitesChart"></canvas>
         </div>
       </div>
       
@@ -198,7 +208,7 @@
       <div class="col-lg-6 mb-4">
         <div class="chart-container">
           <h5 class="mb-3"><i class="bi bi-pie-chart"></i> Cost Distribution</h5>
-          <canvas id="costChart" height="200"></canvas>
+           <canvas id="costChart"></canvas>
         </div>
       </div>
     </div>
@@ -208,7 +218,7 @@
       <div class="col-lg-8 mb-4">
         <div class="chart-container">
           <h5 class="mb-3"><i class="bi bi-graph-up"></i> Monthly Costs & Profits</h5>
-          <canvas id="monthlyCostsChart" height="200"></canvas>
+           <canvas id="monthlyCostsChart"></canvas>
         </div>
       </div>
       
@@ -216,7 +226,7 @@
       <div class="col-lg-4 mb-4">
         <div class="chart-container">
           <h5 class="mb-3"><i class="bi bi-trending-up"></i> Profit Trend</h5>
-          <canvas id="profitTrendChart" height="200"></canvas>
+           <canvas id="profitTrendChart"></canvas>
         </div>
       </div>
     </div>
@@ -245,23 +255,24 @@
           borderSkipped: false,
         }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1
-            }
-          }
-        }
-      }
+       options: {
+         responsive: true,
+         maintainAspectRatio: true,
+         aspectRatio: 2,
+         plugins: {
+           legend: {
+             display: false
+           }
+         },
+         scales: {
+           y: {
+             beginAtZero: true,
+             ticks: {
+               stepSize: 1
+             }
+           }
+         }
+       }
     });
 
     // Cost Distribution Pie Chart
@@ -285,7 +296,8 @@
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        aspectRatio: 1,
         plugins: {
           legend: {
             position: 'bottom'
@@ -330,20 +342,21 @@
           }
         ]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return '₦' + value.toLocaleString();
-              }
-            }
-          }
-        }
-      }
+       options: {
+         responsive: true,
+         maintainAspectRatio: true,
+         aspectRatio: 2.5,
+         scales: {
+           y: {
+             beginAtZero: true,
+             ticks: {
+               callback: function(value) {
+                 return '₦' + value.toLocaleString();
+               }
+             }
+           }
+         }
+       }
     });
 
     // Profit Trend Chart
@@ -371,7 +384,8 @@
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        aspectRatio: 1,
         plugins: {
           legend: {
             position: 'bottom'
